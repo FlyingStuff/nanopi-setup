@@ -1,0 +1,11 @@
+---
+- hosts: nanopi-air-1
+  become: True
+  roles:
+  - basic
+  - nanopi
+  # - ros
+  vars:
+    ubuntu_version_name: xenial
+    ros_version_name: lunar
+    bashrc_user_home: /home/pi/

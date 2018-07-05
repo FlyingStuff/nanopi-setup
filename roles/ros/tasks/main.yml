@@ -1,0 +1,37 @@
+- name: "Setup repo sources"
+  lineinfile:
+    path: /etc/apt/sources.list.d/ros-latest.list
+    create: yes
+    line: "deb http://packages.ros.org/ros/ubuntu {{ubuntu_version_name}} main"
+
+- name: "Setup keys"
+  shell: apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+
+- name: update apt packages
+  apt: >
+    update_cache=yes
+    cache_valid_time=0
+
+- name: install ros-{{ros_version_name}}-desktop
+  apt:  pkg=ros-{{ros_version_name}}-desktop-full state=installed
+
+- name: init rosdep
+  command: rosdep init
+  args:
+    creates: /etc/ros/rosdep/sources.list.d
+
+- name: rosdep update
+  command: rosdep update
+
+- name: "bashrc"
+  lineinfile:
+    path: "{{bashrc_user_home}}.bashrc"
+    line: "source /opt/ros/{{ros_version_name}}/setup.bash"
+
+- name: Install some usefull packages
+  action: apt pkg={{item}} state=installed
+  with_items:
+  - python-rosinstall
+  - python-rosinstall-generator
+  - python-wstool
+  - build-essential

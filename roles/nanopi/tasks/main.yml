@@ -1,0 +1,43 @@
+- name: "install tmux"
+  apt: pkg=tmux state=installed
+
+- stat: path=/etc/modules-load.d/g_mass_storage.conf
+  register: mass_storage_module
+
+- name: "disable mass storage gadget"
+  lineinfile:
+    dest: /etc/modules-load.d/g_mass_storage.conf
+    regexp: '[# ]*g_mass_storage'
+    line: '#g_mass_storage'
+  when: mass_storage_module.stat.exists == True
+
+- name: "enable ethernet gadget"
+  lineinfile:
+    dest: /etc/modules-load.d/g_ether.conf
+    line: 'g_ether'
+    create: yes
+
+# this is needed to work under OS X
+- name: "ethernet configuration"
+  lineinfile:
+    dest: /etc/modprobe.d/g_ether.conf
+    line: 'options g_ether use_eem=0'
+    create: yes
+
+- name: "disable network manager on eth* and usb*"
+  blockinfile:
+    path: /etc/NetworkManager/NetworkManager.conf
+    block: |
+      [keyfile]
+      unmanaged-devices=interface-name:eth*;interface-name:usb*
+
+- name: "static ip on usb0 interface"
+  blockinfile:
+    path: /etc/network/interfaces
+    block: |
+      allow-hotplug usb0
+      iface usb0 inet dhcp
+      allow-hotplug usb0:0
+      iface usb0:0 inet static
+          address 192.168.100.1
+          netmask 255.255.255.0
