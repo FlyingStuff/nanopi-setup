@@ -1,0 +1,17 @@
+
+$ sudo nano /etc/systemd/system/balloon.service
+
+[Unit]
+Description=Balloon Mission Recroding
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/startup_script.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+$ sudo chmod 664 /etc/systemd/system/balloon.service
+
+$ sudo systemctl enable balloon
+
