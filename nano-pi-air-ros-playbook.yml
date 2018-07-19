@@ -1,10 +1,10 @@
 ---
-- hosts: nanopi-air-1
+- hosts: nanopi-air-2
   become: True
   roles:
-  - basic
-  - nanopi
-  # - ros
+#  - basic
+#  - nanopi
+  - ros
   vars:
     ubuntu_version_name: xenial
     ros_version_name: lunar
