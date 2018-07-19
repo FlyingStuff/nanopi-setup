@@ -42,8 +42,8 @@ def big_camera_take_image(logdir, idx):
     return run_cmd(cmd, timeout=15)
 
 def csi_camera_take_image(logdir, idx):
-    filename = logdir + '/img_{:05}.jpeg'.format(idx)
-    cmd = 'streamer -w 1 -s 2592x1944 -o {} -c /dev/v4l/by-path/platform-1cb0000.camera-video-index0'.format(filename)
+    filename = logdir + '/img_{:05}_0.jpeg'.format(idx)
+    cmd = 'streamer -w 1 -t 3 -s 2592x1944 -o {} -c /dev/v4l/by-path/platform-1cb0000.camera-video-index0'.format(filename)
     return run_cmd(cmd, timeout=15)
 
 def small_camera_take_video(logdir, idx, duration):
@@ -53,7 +53,7 @@ def small_camera_take_video(logdir, idx, duration):
 
 
 
-def run_shell(cmd):
+def run_shell_non_blocking(cmd):
     print(cmd)
     proc = subprocess.Popen([cmd], shell=True,
              stdin=None, stdout=None, stderr=None, close_fds=True)
@@ -64,7 +64,10 @@ def run_shell(cmd):
 print('setting up gps log')
 run_cmd('stty -F /dev/ttyS2 9600  raw clocal -echo')
 time.sleep(1)
-run_shell('cat < /dev/ttyS2 > {}/gps.log'.format(log_dir))
+run_shell_non_blocking('cat < /dev/ttyS2 > {}/gps.log'.format(log_dir))
+
+
+run_shell_non_blocking('python3 /home/pi/humidity_temperature_readout.py 0 > {}/humidity_and_temp.csv'.format(log_dir))
 
 
 big_camera_dir = log_dir + '/side_camera'
@@ -74,7 +77,10 @@ create_folder(csi_camera_dir)
 small_camera_dir = log_dir + '/up_camera'
 create_folder(small_camera_dir)
 
-for i in range(10):
+# for i in range(10):
+i = 0
+while True:
+    i += 1
     big_camera_take_image(big_camera_dir, i)
     csi_camera_take_image(csi_camera_dir, i)
     small_camera_take_video(small_camera_dir, i, 20)
