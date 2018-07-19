@@ -85,7 +85,7 @@ class SHT31:
             return 0, 0
 
     def write(self, value):
-        print('write {}'.format(value))
+        # print('write {}'.format(value))
         self.i2c.write(struct.pack(">H", value))
 
     def close(self):
@@ -109,7 +109,7 @@ class SHT31:
 
         # calculates 8-Bit checksum with given polynomial
         for byteCtr in [x for x in struct.pack(">H", value)]:
-            print(crc, byteCtr)
+            # print(crc, byteCtr)
             crc ^= byteCtr
             for bit in range(8, 0, -1):
                 if crc & 0x80:
