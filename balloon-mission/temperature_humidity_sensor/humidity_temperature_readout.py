@@ -28,5 +28,5 @@ while 1:
 
     time.sleep(1)
     print ("%s, %s, %s, %s, %s" % (time.time(), humidity_s1, temp_s1, humidity_s2, temp_s2))
-
+    sys.stdout.flush()
 
