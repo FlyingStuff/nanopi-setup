@@ -5,6 +5,31 @@ from flask import Flask, Response, redirect
 app = Flask(__name__)
 
 
+def parse_nmea_line(msg):
+    def parse_deg(field):
+        if len(field.split('.')) != 2:
+            return None
+        first, second = field.split('.')
+        degree = first[:-2]
+        minutes = first[-2:] + '.' + second
+        return int(degree) + float(minutes)/60
+
+    try:
+        msg_fields = msg.split(',')
+        if msg_fields[0][-3:] == 'GGA' and len(msg_fields) == 15:
+            lat = parse_deg(msg_fields[2])
+            if lat is not None and msg_fields[3] == 'S':
+                lat = -lat
+            lng = parse_deg(msg_fields[4])
+            if lng is not None and msg_fields[5] == 'W':
+                lng = -lng
+            sats = int(msg_fields[7])
+            alt = float(msg_fields[9])
+            return {'lat': lat, 'lng': lng, 'alt': alt, 'sats': sats}
+    except Exception as e:
+        print(e)
+
+
 port = '/dev/ttyUSB0'
 if len(sys.argv) > 1:
     port = sys.argv[1]
@@ -20,14 +45,16 @@ def read_serial():
     while True:
         line = modem.readline().decode(encoding="ascii", errors="ignore")
         log.write(line)
+        print(line)
         with last_lines_lock:
             last_lines.append(line)
             while len(last_lines) > 50:
                 last_lines.pop(0)
-        with coordinates_lock:
-            coordinates['lat'] = 1
-            coordinates['lng'] = 2
-            coordinates['alt'] = 3
+        coordinates_update = parse_nmea_line(line)
+        if coordinates_update is not None:
+            print(coordinates_update)
+            with coordinates_lock:
+                coordinates.update(coordinates_update)
 
 serial_thread = threading.Thread(target=read_serial)
 serial_thread.start()
