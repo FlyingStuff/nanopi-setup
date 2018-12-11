@@ -1,6 +1,3 @@
-- name: "install tmux"
-  apt: pkg=tmux state=installed
-
 - stat: path=/etc/modules-load.d/g_mass_storage.conf
   register: mass_storage_module
 
@@ -35,9 +32,9 @@
   blockinfile:
     path: /etc/network/interfaces
     block: |
+      # allow-hotplug usb0
+      # iface usb0 inet dhcp
       allow-hotplug usb0
-      iface usb0 inet dhcp
-      allow-hotplug usb0:0
-      iface usb0:0 inet static
+      iface usb0 inet static
           address 192.168.100.1
           netmask 255.255.255.0

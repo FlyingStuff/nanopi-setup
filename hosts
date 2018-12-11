@@ -8,8 +8,9 @@ ansible_become_pass=pi
 
 [nanopi-air]
 nanopi-air-1 ansible_host=nanopi-air-1.local
-nanopi-air-2 ansible_host=192.168.1.133
+nanopi-air-2 ansible_host=192.168.2.127
 
 [nanopi-air:vars]
 ansible_user=pi
-ansible_become_pass=pi
+ansible_become_pass=1234
+ansible_python_interpreter=/usr/bin/python3

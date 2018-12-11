@@ -13,7 +13,7 @@
     cache_valid_time=0
 
 - name: install ros-{{ros_version_name}}-desktop
-  apt:  pkg=ros-{{ros_version_name}}-desktop-full state=installed
+  apt:  pkg=ros-{{ros_version_name}}-desktop-full state=present
 
 - name: init rosdep
   command: rosdep init
@@ -29,7 +29,7 @@
     line: "source /opt/ros/{{ros_version_name}}/setup.bash"
 
 - name: Install some usefull packages
-  action: apt pkg={{item}} state=installed
+  action: apt pkg={{item}} state=present
   with_items:
   - python-rosinstall
   - python-rosinstall-generator

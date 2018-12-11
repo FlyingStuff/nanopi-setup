@@ -4,8 +4,8 @@
   roles:
   - basic
   - nanopi
-  # - ros
+  - ros
   vars:
-    ubuntu_version_name: xenial
-    ros_version_name: lunar
+    ubuntu_version_name: bionic
+    ros_version_name: melodic
     bashrc_user_home: /home/pi/
